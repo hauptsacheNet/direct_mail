@@ -1183,7 +1183,20 @@ class DirectMailUtility
         $htmlmail->includeMedia = $row['includeMedia'];
 
         if ($plainTextUrl) {
-            $mailContent = GeneralUtility::getURL(self::addUserPass($plainTextUrl, $params), 0, array('User-Agent: Direct Mail'));
+            $headers = array('User-Agent: Direct Mail');
+
+            if ($GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['direct_mail']['OverrideFetchHost'] && $row['use_domain']) {
+                $originalHost = parse_url($plainTextUrl, PHP_URL_HOST);
+                $headers[] = 'Host: ' . $originalHost;
+                $plainTextUrl = preg_replace(
+                    '#' . preg_quote($originalHost, '#') . '#',
+                    $GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['direct_mail']['OverrideFetchHost'],
+                    $plainTextUrl,
+                    1 // only replace the first match
+                );
+            }
+
+            $mailContent = GeneralUtility::getURL(self::addUserPass($plainTextUrl, $params), 0, $headers);
             $htmlmail->addPlain($mailContent);
             if (!$mailContent || !$htmlmail->theParts['plain']['content']) {
                 $errorMsg[] = $GLOBALS['LANG']->getLL('dmail_no_plain_content');
@@ -1195,7 +1208,7 @@ class DirectMailUtility
         // fetch the HTML url
         if ($htmlUrl) {
             // Username and password is added in htmlmail object
-            $success = $htmlmail->addHTML(self::addUserPass($htmlUrl, $params));
+            $success = $htmlmail->addHTML(self::addUserPass($htmlUrl, $params), (bool)$row['use_domain']);
             // If type = 1, we have an external page.
             if ($row['type'] == 1) {
                 // Try to auto-detect the charset of the message

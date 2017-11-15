@@ -22,6 +22,9 @@ enablePlainTextNews = 1
 	# cat=basic/enable; type=boolean; label=Use http connection for fetching Newsletter-Content: Even if your TYPO3 Backend is in SSL-Mode, the URL for fetching the newsletter contents will be http
 UseHttpToFetch = 0
 
+	# cat=basic; type=string; label=Override host for fetching Newsletter-Content: If php is not able to access the websites domain directly, you can define an alternative host (like localhost) for fetching of content. The original domain will still be sent as "Host" header to avoid problems with server configuration.
+OverrideFetchHost =
+
 	# cat=basic/dev/1000; type=user[DirectMailTeam\DirectMail\Utility\TsParserExt->displayMessage]; label=LLL:EXT:direct_mail/Resources/Private/Language/locallang_mod2-6.xlf:update_option
 updateMessage=0
 

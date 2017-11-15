@@ -82,6 +82,11 @@ $TYPO3_CONF_VARS['EXTCONF'][$_EXTKEY]['cronInt'] = $extConf['cronInt'];
 $TYPO3_CONF_VARS['EXTCONF'][$_EXTKEY]['UseHttpToFetch'] = $extConf['UseHttpToFetch'];
 
 /**
+ * Use HTTP to fetch contents
+ */
+$TYPO3_CONF_VARS['EXTCONF'][$_EXTKEY]['OverrideFetchHost'] = $extConf['OverrideFetchHost'];
+
+/**
  * Enable the use of News plain text rendering hook:
  */
 if ($extConf['enablePlainTextNews']) {

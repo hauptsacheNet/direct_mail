@@ -1041,14 +1041,15 @@ class Dmailer
     /**
      * Add HTML to an email
      *
-     * @param	string $file String location of the HTML
+     * @param	string $file    String location of the HTML
+     * @param   bool   $isLocal If the target is located on the current server.
      *
      * @return	mixed		bool: HTML fetch status. string: if HTML is a frameset.
      */
-    public function addHTML($file)
+    public function addHTML($file, $isLocal = false)
     {
         // Adds HTML and media, encodes it from a URL or file
-        $status = $this->fetchHTML($file);
+        $status = $this->fetchHTML($file, $isLocal);
         if (!$status) {
             return false;
         }
@@ -1064,14 +1065,28 @@ class Dmailer
     /**
      * Fetches the HTML-content from either url or local server file
      *
-     * @param	string $url Url of the html to fetch
+     * @param	string $url     Url of the html to fetch
+     * @param   bool   $isLocal If the target is located on the current server.
      *
      * @return bool Whether the data was fetched or not
      */
-    public function fetchHTML($url)
+    public function fetchHTML($url, $isLocal = false)
     {
+        $headers = array('User-Agent: Direct Mail');
+
+        if ($isLocal && $GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['direct_mail']['OverrideFetchHost']) {
+            $originalHost = parse_url($url, PHP_URL_HOST);
+            $headers[] = 'Host: ' . $originalHost;
+            $url = preg_replace(
+                '#' . preg_quote($originalHost, '#') . '#',
+                $GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['direct_mail']['OverrideFetchHost'],
+                $url,
+                1 // only replace the first match
+            );
+        }
+
         // Fetches the content of the page
-        $this->theParts['html']['content'] = GeneralUtility::getURL($url);
+        $this->theParts['html']['content'] = GeneralUtility::getURL($url, 0, $headers);
         if ($this->theParts['html']['content']) {
             $urlPart = parse_url($url);
             if ($GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['direct_mail']['UseHttpToFetch'] == 1) {
