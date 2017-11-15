@@ -751,7 +751,7 @@ class DirectMailUtility
                 $domainName = $domain['domainName'];
                 $urlParts = @parse_url(GeneralUtility::getIndpEnv('TYPO3_REQUEST_DIR'));
                 $scheme = $urlParts['scheme'];
-                $port = $urlParts['port'];
+                // the domain normally already contains the port
             }
             $GLOBALS['TYPO3_DB']->sql_free_result($domainResult);
         }
