@@ -1185,15 +1185,8 @@ class DirectMailUtility
         if ($plainTextUrl) {
             $headers = array('User-Agent: Direct Mail');
 
-            if ($GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['direct_mail']['OverrideFetchHost'] && $row['use_domain']) {
-                $originalHost = parse_url($plainTextUrl, PHP_URL_HOST);
-                $headers[] = 'Host: ' . $originalHost;
-                $plainTextUrl = preg_replace(
-                    '#' . preg_quote($originalHost, '#') . '#',
-                    $GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['direct_mail']['OverrideFetchHost'],
-                    $plainTextUrl,
-                    1 // only replace the first match
-                );
+            if ($row['use_domain']) {
+                self::overrideFetchHost($plainTextUrl, $headers);
             }
 
             $mailContent = GeneralUtility::getURL(self::addUserPass($plainTextUrl, $params), 0, $headers);
@@ -1277,6 +1270,24 @@ class DirectMailUtility
         } else {
             return $theOutput;
         }
+    }
+
+    public static function overrideFetchHost(&$url, &$headers)
+    {
+        if (!$GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['direct_mail']['OverrideFetchHost']) {
+            return;
+        }
+
+        $originalHost = parse_url($url, PHP_URL_HOST);
+        $originalPort = parse_url($url, PHP_URL_PORT);
+        $originalHostPort = $originalPort ? "$originalHost:$originalPort" : $originalHost;
+        $headers[] = 'Host: ' . $originalHost;
+        $url = preg_replace(
+            '#' . preg_quote($originalHostPort, '#') . '#',
+            $GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['direct_mail']['OverrideFetchHost'],
+            $url,
+            1 // only replace the first match
+        );
     }
 
 

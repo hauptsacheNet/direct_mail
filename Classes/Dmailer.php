@@ -1074,15 +1074,8 @@ class Dmailer
     {
         $headers = array('User-Agent: Direct Mail');
 
-        if ($isLocal && $GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['direct_mail']['OverrideFetchHost']) {
-            $originalHost = parse_url($url, PHP_URL_HOST);
-            $headers[] = 'Host: ' . $originalHost;
-            $url = preg_replace(
-                '#' . preg_quote($originalHost, '#') . '#',
-                $GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['direct_mail']['OverrideFetchHost'],
-                $url,
-                1 // only replace the first match
-            );
+        if ($isLocal) {
+            DirectMailUtility::overrideFetchHost($url, $headers);
         }
 
         // Fetches the content of the page
