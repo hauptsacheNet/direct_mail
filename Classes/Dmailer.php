@@ -1073,13 +1073,14 @@ class Dmailer
     public function fetchHTML($url, $isLocal = false)
     {
         $headers = array('User-Agent: Direct Mail');
+        $fetchUrl = $url;
 
         if ($isLocal) {
-            DirectMailUtility::overrideFetchHost($url, $headers);
+            DirectMailUtility::overrideFetchHost($fetchUrl, $headers);
         }
 
         // Fetches the content of the page
-        $this->theParts['html']['content'] = GeneralUtility::getURL($url, 0, $headers);
+        $this->theParts['html']['content'] = GeneralUtility::getURL($fetchUrl, 0, $headers);
         if ($this->theParts['html']['content']) {
             $urlPart = parse_url($url);
             if ($GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['direct_mail']['UseHttpToFetch'] == 1) {
