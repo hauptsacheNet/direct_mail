@@ -1095,7 +1095,12 @@ class Dmailer
                 $user .= '@';
             }
 
-            $this->theParts['html']['path'] = $urlPart['scheme'] . '://' . $user . $urlPart['host'] . GeneralUtility::getIndpEnv('TYPO3_SITE_PATH');
+            $host = $urlPart['host'];
+            if ($urlPart['port']) {
+                $host = $host . ':' . $urlPart['port'];
+            }
+
+            $this->theParts['html']['path'] = $urlPart['scheme'] . '://' . $user . $host . GeneralUtility::getIndpEnv('TYPO3_SITE_PATH');
 
             return true;
         } else {

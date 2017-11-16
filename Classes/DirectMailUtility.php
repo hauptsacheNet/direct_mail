@@ -1280,10 +1280,11 @@ class DirectMailUtility
 
         $originalHost = parse_url($url, PHP_URL_HOST);
         $originalPort = parse_url($url, PHP_URL_PORT);
-        $originalHostPort = $originalPort ? "$originalHost:$originalPort" : $originalHost;
-        $headers[] = 'Host: ' . $originalHost;
+        $originalHostAndPort = $originalPort ? "$originalHost:$originalPort" : $originalHost;
+        $headers[] = 'Host: ' . $originalHostAndPort;
+
         $url = preg_replace(
-            '#' . preg_quote($originalHostPort, '#') . '#',
+            '#' . preg_quote($originalHostAndPort, '#') . '#',
             $GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['direct_mail']['OverrideFetchHost'],
             $url,
             1 // only replace the first match
